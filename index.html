@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Phaser Template</title>
+    <link rel="stylesheet" href="./assets/libs/fontawesome/css/fontawesome.css">
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css" integrity="sha384-jLKHWM3JRmfMU0A5x5AkjWkw/EYfGUAGagvnfryNV3F9VqM98XiIH7VBGVoxVSc7" crossorigin="anonymous">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />-->
+
+    <style>
+        html,
+        body,
+        #game-container {
+            margin: 0;
+            padding: 0;
+        }
+
+        #game-container {
+            min-width: 100vw;
+            min-height: 100vh;
+            display: block; /* flex */;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #game-container > canvas {
+            /*border-radius: 5px;*/
+            /*image-rendering: pixelated;*/
+            display: block;
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+<div id="game-container"></div>
+
+<div id="overlay-controls">
+</div>
+
+<div style="
+        background: red;
+        /*width: 100px;*/
+        /*height: 100px;*/
+        position: absolute;
+        bottom: 50px;
+        left: 50px;
+        border: 5px solid black;
+        padding: 10px 10px;
+        border-radius: 50%;">
+    <div id="overlay-picked-item">
+        <img src="../assets/images/mystery-box.png" id="picked-item-image" alt="" style="width: 80px; height: 80px;">
+    </div>
+    <div style="right: 50px; bottom: 50px; position: fixed;">
+        <button id="btn-up"><i class="fa fa-arrow-down fa-7x"></i></button>
+        <button id="btn-down"><i class="fa fa-arrow-up fa-7x"></i></button>
+    </div>
+</div>
+
+<script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+<script src="//cdn.jsdelivr.net/npm/phaser-matter-collision-plugin"></script>
+<link rel="stylesheet" href="./assets/libs/fontawesome/js/fontawesome.min.js">
+<script src="./js/index.js" type="module"></script>
+</body>
+</html>
