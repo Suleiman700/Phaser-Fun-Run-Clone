@@ -7,15 +7,17 @@ import Events_MysteryBox from './events/Events_MysteryBox.js';
 import Events_Controls from './events/Events_Controls.js';
 import UI_InGameButtons from './ui/UI_InGameButtons.js';
 import InGameItems from './items/InGameItems.js';
+import JumpSensor from './sensors/JumpSensor.js';
 
 const MysteryBoxIns = new MysteryBox()
 
 
 export default class MainScene extends Phaser.Scene {
     preload() {
-        const level = scene_defaultBlue
+        const levelConfig = scene_defaultBlue
+        this.levelConfig = levelConfig
 
-        this.load.tilemapTiledJSON("map", level.sceneFile);
+        this.load.tilemapTiledJSON("map", levelConfig.sceneFile);
         this.load.image(
             "kenney-tileset-64px-extruded",
             "../assets/tilesets/kenney-tileset-64px-extruded.png"
@@ -33,6 +35,10 @@ export default class MainScene extends Phaser.Scene {
         this.load.image("block", "../assets/images/block.png");
         this.load.image("coin", "../assets/images/items/coin.png");
         this.load.image("mysteryBox", "../assets/images/mystery-box.png");
+
+        // Sounds
+        this.load.audio('jump', [ levelConfig.sounds.playerJump.filePath ]);
+        this.load.audio('springBounce', [ levelConfig.sounds.springBounce.filePath ]);
 
         this.load.spritesheet(
             "player",
@@ -82,6 +88,14 @@ export default class MainScene extends Phaser.Scene {
         this.player = new Player(this, x, y);
         // this.player.sprite.setCollisionCategory(1);
 
+        this.map = map
+
+        // Sounds
+        this.sounds = {
+            jump: this.sound.add('jump'),
+            springBounce: this.sound.add('springBounce')
+        }
+
         // Events
         this.events.Events_Player = new Events_Player(this)
         this.events.Events_MysteryBox = new Events_MysteryBox(this)
@@ -94,19 +108,20 @@ export default class MainScene extends Phaser.Scene {
         }
 
         // Sensors
-        const rectJump = map.findObject("Sensors", (obj) => obj.name === "jump");
-        const jumpSensor = this.matter.add.rectangle(
-            rectJump.x + rectJump.width / 2,
-            rectJump.y + rectJump.height / 2,
-            rectJump.width,
-            rectJump.height,
-            {
-                isSensor: true, // It shouldn't physically interact with other bodies
-                isStatic: true, // It shouldn't move
-            }
-        );
+        // const rectJump = map.findObject("Sensors", (obj) => obj.name === "jump");
+        // const jumpSensor = this.matter.add.rectangle(
+        //     rectJump.x + rectJump.width / 2,
+        //     rectJump.y + rectJump.height / 2,
+        //     rectJump.width,
+        //     rectJump.height,
+        //     {
+        //         isSensor: true, // It shouldn't physically interact with other bodies
+        //         isStatic: true, // It shouldn't move
+        //     }
+        // );
         this.sensors = {
-            jumpSensor: jumpSensor
+            jumpSensor: new JumpSensor(this)
+            // jumpSensor: jumpSensor
         }
 
         // Set up collision events with mystery box
@@ -129,10 +144,11 @@ export default class MainScene extends Phaser.Scene {
 
         this.unsubscribeCelebrate = this.matterCollision.addOnCollideStart({
             objectA: this.player.sprite,
-            objectB: jumpSensor,
+            objectB: this.sensors.jumpSensor.sensor,
             callback: () => {
                 console.log('jump')
                 this.player.sprite.setVelocityY(-20)
+                this.sensors.jumpSensor.trigger(this.player.sprite)
             },
             context: this,
         });
@@ -147,41 +163,42 @@ export default class MainScene extends Phaser.Scene {
         });
 
 
-        const CoinLayer = map.getObjectLayer('coinLayer')['objects'];
-        CoinLayer.forEach(object => {
-            console.log(object.x, object.y)
-
-            const saw = this.matter.add
-                .image(object.x, object.y, "saw", {
-                    restitution: 0,
-                    friction: 10,
-                    density: 0.0001,
-                    shape: "circle",
-                })
-                .setScale(0.08)
-                .setVelocityX(7);
-
-            saw.setCollisionCategory(1); // Use a unique category number (e.g., 1)
-
-            this.unsubscribeCelebrate = this.matterCollision.addOnCollideStart({
-                objectA: saw,
-                objectB: jumpSensor,
-                callback: () => {
-                    console.log('saw jump')
-                    saw.setVelocityY(-10)
-                    saw.setVelocityX(10)
-                },
-                context: this,
-            });
-
-            // const coin = this.matter.add.image(object.x, object.y, "emoji");
-            // coin.setStatic(true);
-            // coin.setScale(50 / coin.width, 50 / coin.height);
-
-            // Set up collision filtering for the coin
-            // coin.setCollisionCategory(0); // Use a unique category number (e.g., 0)
-            // coin.setCollidesWith([1]); // Disable collisions with category 1 (player category)
-        });
+        // const CoinLayer = map.getObjectLayer('coinLayer')['objects'];
+        // CoinLayer.forEach(object => {
+        //     console.log(object.x, object.y)
+        //
+        //     const saw = this.matter.add
+        //         .image(object.x, object.y, "saw", {
+        //             restitution: 0,
+        //             friction: 10,
+        //             density: 0.0001,
+        //             shape: "circle",
+        //         })
+        //         .setScale(0.08)
+        //         .setVelocityX(7);
+        //
+        //     saw.setCollisionCategory(1); // Use a unique category number (e.g., 1)
+        //
+        //     this.unsubscribeCelebrate = this.matterCollision.addOnCollideStart({
+        //         objectA: saw,
+        //         objectB: this.sensors.jumpSensor.sensor,
+        //         callback: () => {
+        //             console.log('saw jump')
+        //             saw.setVelocityY(-10)
+        //             saw.setVelocityX(10)
+        //             this.sensors.jumpSensor.trigger(saw)
+        //         },
+        //         context: this,
+        //     });
+        //
+        //     // const coin = this.matter.add.image(object.x, object.y, "emoji");
+        //     // coin.setStatic(true);
+        //     // coin.setScale(50 / coin.width, 50 / coin.height);
+        //
+        //     // Set up collision filtering for the coin
+        //     // coin.setCollisionCategory(0); // Use a unique category number (e.g., 0)
+        //     // coin.setCollidesWith([1]); // Disable collisions with category 1 (player category)
+        // });
 
 
 

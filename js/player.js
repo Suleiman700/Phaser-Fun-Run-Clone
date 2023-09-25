@@ -180,6 +180,9 @@ export default class Player {
         if (isJumpKeyDown && this.canJump && isOnGround) {
             sprite.setVelocityY(-11);
 
+            // Play jump sound
+            this.scene.sounds.jump.play()
+
             // Add a slight delay between jumps since the bottom sensor will still collide for a few
             // frames after a jump is initiated
             this.canJump = false;

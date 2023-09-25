@@ -15,7 +15,7 @@ export default class Events_Controls {
         // Spawn item
         if (pickedItemData) {
             const coords = {
-                x: this.scene.player.sprite.x,
+                x: this.scene.player.sprite.x + 50,
                 y: this.scene.player.sprite.y,
             }
             this.scene.items.inGameItems.spawnItem(pickedItemData, coords)

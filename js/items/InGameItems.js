@@ -16,26 +16,37 @@ export default class InGameItems {
         switch (_itemData.name) {
             case 'saw':
                 const saw = this.scene.matter.add
-                    .image(x, y, _itemData.name, {
-                        restitution: 0,
-                        friction: 10,
-                        density: 0.0001,
-                        shape: "circle",
-                    })
-                    .setScale(0.08)
-                    .setVelocityX(20)
+                    .sprite(x, y, _itemData.name)
+                    .setCircle(50, { restitution: 0, friction: 0, density: 0.01 })
+                    .setScale(0.1)
+                    .setVelocityX(20);
 
                 // Register saw sensors
                 this.scene.unsubscribeCelebrate = this.scene.matterCollision.addOnCollideStart({
                     objectA: saw,
-                    objectB: this.scene.sensors.jumpSensor,
+                    objectB: this.scene.sensors.jumpSensor.sensor,
                     callback: () => {
-                        console.log('saw jump')
-                        saw.setVelocityY(-10)
-                        saw.setVelocityX(10)
+                        console.log('spawned saw hit jump sensor')
+                        saw.setVelocityY(this.scene.levelConfig.inGameItems.saw.velocityY)
+                        saw.setVelocityX(this.scene.levelConfig.inGameItems.saw.velocityX)
+                        this.scene.sensors.jumpSensor.trigger()
                     },
                     context: this,
                 });
+
+                // Set up a timer to periodically adjust the velocity (e.g., every frame)
+                const velocityUpdateInterval = 16; // Adjust as needed
+                const velocityUpdateIntervalId = setInterval(() => {
+                    // Update the saw's velocity to maintain the desired x-velocity
+                    saw.setVelocityX(this.scene.levelConfig.inGameItems.saw.velocityX); // Adjust the x-velocity as needed
+                }, velocityUpdateInterval);
+
+                // Destroy object at lifetime
+                setTimeout(() => {
+                    clearInterval(velocityUpdateIntervalId);
+                    saw.destroy()
+                }, this.scene.levelConfig.inGameItems.saw.lifetime)
+
                 break
         }
     }
