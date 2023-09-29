@@ -15,7 +15,7 @@ export const config = {
     },
     mysteryBox: {
         removeItemAfterUsage: {
-            state: false,
+            state: true,
         }
     },
 }

@@ -17,8 +17,8 @@ export default class InGameItems {
             case 'saw':
                 const saw = this.scene.matter.add
                     .sprite(x, y, _itemData.name)
-                    .setCircle(50, { restitution: 0, friction: 0, density: 0.01 })
-                    .setScale(0.1)
+                    .setCircle(50, { restitution: 0, friction: 0, density: 1 })
+                    .setScale(0.2)
                     .setVelocityX(20);
 
                 // Register saw sensors
